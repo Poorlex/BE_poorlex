@@ -2,6 +2,7 @@ package com.project.poorlex.domain.payment;
 
 import com.project.poorlex.domain.BaseEntity;
 import com.project.poorlex.domain.battleuser.BattleUser;
+import com.project.poorlex.domain.budget.Budget;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,6 +27,9 @@ public class Payment extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private BattleUser battleUser;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Budget budget;
+
 	private String content;
 
 	private String category;
@@ -33,8 +37,9 @@ public class Payment extends BaseEntity {
 	private int amount;
 
 	@Builder
-	private Payment(BattleUser battleUser, String content, String category, int amount) {
+	private Payment(BattleUser battleUser, Budget budget, String content, String category, int amount) {
 		this.battleUser = battleUser;
+		this.budget = budget;
 		this.content = content;
 		this.category = category;
 		this.amount = amount;

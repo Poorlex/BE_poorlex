@@ -1,7 +1,8 @@
-package com.project.poorlex.domain.goalphoto;
+package com.project.poorlex.domain.budget;
 
-import com.project.poorlex.domain.BaseEntity;
-import com.project.poorlex.domain.goal.Goal;
+import java.time.LocalDateTime;
+
+import com.project.poorlex.domain.member.Member;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,20 +18,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GoalPhoto extends BaseEntity {
+public class Budget {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private Goal goal;
+	private Member member;
 
-	private String url;
+	private int amount;
+
+	private int totalPayment;
+
+	private LocalDateTime endDate;
 
 	@Builder
-	private GoalPhoto(Goal goal, String url) {
-		this.goal = goal;
-		this.url = url;
+	private Budget(Member member, int amount, int totalPayment, LocalDateTime endDate) {
+		this.member = member;
+		this.amount = amount;
+		this.totalPayment = totalPayment;
+		this.endDate = endDate;
 	}
 }
