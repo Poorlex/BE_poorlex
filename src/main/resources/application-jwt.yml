@@ -1,0 +1,10 @@
+spring:
+  config:
+    activate:
+      on-profile: "jwt"
+
+jwt:
+  token:
+    secret-key: ${JWT_SECRET_KEY}
+    access-expire-length: ${JWT_ACCESS_EXPIRE:3600000}
+    refresh-expire-length: ${JWT_REFRESH_EXPIRE:86400000}
