@@ -4,10 +4,13 @@ import static com.project.poorlex.exception.member.MemberErrorCode.*;
 
 import org.springframework.stereotype.Service;
 
+import com.project.poorlex.domain.member.Member;
+import com.project.poorlex.domain.member.MemberRepository;
 import com.project.poorlex.dto.member.MemberLoginResponse;
 import com.project.poorlex.exception.member.MemberCustomException;
 import com.project.poorlex.jwt.JwtTokenProvider;
 import com.project.poorlex.jwt.Token;
+import com.project.poorlex.util.AuthUtil;
 import com.project.poorlex.util.RedisUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -18,8 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AuthService {
 
+	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisUtil redisUtil;
+
+	public Member findMemberFromToken() {
+		return memberRepository.findById(AuthUtil.getCurrentUserId())
+			.orElseThrow(() -> new MemberCustomException(INVALID_TOKEN));
+	}
 
 	public MemberLoginResponse accessTokenByRefreshToken(
 		String accessToken,

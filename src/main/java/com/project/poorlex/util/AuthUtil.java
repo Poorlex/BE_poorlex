@@ -33,7 +33,6 @@ public class AuthUtil {
 	}
 
 	public static Long getCurrentUserId() {
-		return (Long)(SecurityContextHolder.getContext()
-			.getAuthentication()).getPrincipal();
+		return (Long)(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
 	}
 }
