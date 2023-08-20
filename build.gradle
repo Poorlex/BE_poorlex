@@ -28,9 +28,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // 소셜로그인을 위한 의존성 추가
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // redis 설정을 위한 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
@@ -43,6 +48,9 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    // test 환경에서 개별 구동할 embedded-redis 설정
+    testImplementation 'it.ozimov:embedded-redis:0.7.2'
+
 }
 
 tasks.named('test') {
