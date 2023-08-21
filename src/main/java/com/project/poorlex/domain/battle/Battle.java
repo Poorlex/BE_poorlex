@@ -4,10 +4,7 @@ import java.time.LocalDateTime;
 
 import com.project.poorlex.domain.BaseEntity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,15 +29,16 @@ public class Battle extends BaseEntity {
 
 	private LocalDateTime endDate;
 
-	private boolean isActivated;
+	@Enumerated(EnumType.STRING)
+	private BattleStatus battleStatus;
 
 	@Builder
-	private Battle(String name, String description, int budget, int total, LocalDateTime endDate, boolean isActivated) {
+	private Battle(String name, String description, int budget, int total, LocalDateTime endDate, BattleStatus battleStatus) {
 		this.name = name;
 		this.description = description;
 		this.budget = budget;
 		this.total = total;
 		this.endDate = endDate;
-		this.isActivated = isActivated;
+		this.battleStatus = battleStatus;
 	}
 }

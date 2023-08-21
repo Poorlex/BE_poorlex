@@ -25,5 +25,4 @@ public class MemberController {
 		@RequestBody @Valid MemberCreateRequest request) {
 		return ApiResponse.ok(memberService.createOrLogin(request));
 	}
-
 }
