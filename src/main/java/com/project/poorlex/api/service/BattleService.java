@@ -72,6 +72,6 @@ public class BattleService {
             battleList = battleRepository.findByBudgetBetween(filter.getMinBudget(), filter.getMaxBudget());
         }
 
-        return new BattleSearchResponse(battleList);
+        return BattleSearchResponse.from(battleList);
     }
 }
