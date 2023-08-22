@@ -1,9 +1,7 @@
 package com.project.poorlex.domain.member;
 
-import static com.project.poorlex.domain.member.MemberRole.*;
-
 import com.project.poorlex.domain.BaseEntity;
-import com.project.poorlex.dto.member.MemberCreateRequest;
+import com.project.poorlex.dto.member.MemberUpdateRequest;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,12 +46,8 @@ public class Member extends BaseEntity {
 		this.memberRole = memberRole;
 	}
 
-	public static Member create(MemberCreateRequest request) {
-		return Member.builder()
-			.oauthId(request.getOauthId())
-			.email(request.getEmail())
-			.name(request.getName())
-			.memberRole(USER)
-			.build();
+	public void update(MemberUpdateRequest request) {
+		this.name = request.getName();
+		this.description = request.getDescription();
 	}
 }
