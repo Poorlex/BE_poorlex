@@ -8,9 +8,11 @@ import com.project.poorlex.domain.battleuser.Role;
 import com.project.poorlex.domain.member.Member;
 import com.project.poorlex.domain.member.MemberRepository;
 import com.project.poorlex.dto.battle.BattleCreateRequest;
+import com.project.poorlex.dto.battle.BattleDetailResponse;
 import com.project.poorlex.dto.battle.BattleSearchResponse;
 import com.project.poorlex.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -20,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -143,5 +146,67 @@ class BattleServiceTest {
 
         battleSearchResponse = battleService.searchBattle(BattleFilter.TO_200K);
         assertEquals(3, battleSearchResponse.getBattleList().size());
+    }
+
+    @Test
+    @DisplayName("방 상세정보 보기 - 진행 전 ")
+    void searchWaitingRoomDetail(){
+        // 방 생성 정보를 받음
+        BattleCreateRequest battleCreateRequest = BattleCreateRequest.builder()
+                .name("방 생성하기")
+                .total(10)
+                .description("방 생성 테스트입니다")
+                .endDate(LocalDateTime.now())
+                .budget(200000)
+                .build();
+
+        // 방 생성 정보를 통해 새로운 배틀을 만듦
+        Battle newBattle = Battle.builder()
+                .name(battleCreateRequest.getName())
+                .total(battleCreateRequest.getTotal())
+                .description(battleCreateRequest.getDescription())
+                .endDate(battleCreateRequest.getEndDate())
+                .budget(battleCreateRequest.getBudget())
+                .battleStatus(BattleStatus.WAITING)
+                .build();
+
+        Battle savedBattle = battleRepository.save(newBattle);
+
+        // 해당 방을 만든 유저의 정보를 만듦(테스트용)
+        Member member = Member.builder()
+                .name("테스트 유저")
+                .build();
+
+        Member member2 = Member.builder()
+                .name("테스트 유저2")
+                .build();
+
+        Member savedMember = memberRepository.save(member);
+
+        Member savedMember2 = memberRepository.save(member2);
+
+        BDDMockito.given(authService.findMemberFromToken()).willReturn(member);
+
+
+        BattleUser battleUser = BattleUser.builder()
+                .member(savedMember)
+                .battle(savedBattle)
+                .role(Role.ADMIN)
+                .build();
+
+        battleUserRepository.save(battleUser);
+
+        BattleUser battleUser2 = BattleUser.builder()
+                .member(savedMember2)
+                .battle(savedBattle)
+                .role(Role.USER)
+                .build();
+
+        battleUserRepository.save(battleUser2);
+
+        BattleDetailResponse battleDetailResponse = battleService.searchBattleDetail(1L);
+
+        assertEquals(2, battleDetailResponse.getBattleMembers().size());
+        assertEquals("방 생성 테스트입니다", battleDetailResponse.getDescription());
     }
 }
