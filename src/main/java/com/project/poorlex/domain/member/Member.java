@@ -33,16 +33,26 @@ public class Member extends BaseEntity {
 
 	private int point;
 
+	private int gold;
+
+	private int silver;
+
+	private int bronze;
+
 	@Enumerated(EnumType.STRING)
 	private MemberRole memberRole;
 
 	@Builder
-	private Member(String oauthId, String email, String name, String description, MemberRole memberRole, int point) {
+	private Member(String oauthId, String email, String name, String description, int point, int gold, int silver,
+		int bronze, MemberRole memberRole) {
 		this.oauthId = oauthId;
 		this.email = email;
 		this.name = name;
 		this.description = description;
 		this.point = point;
+		this.gold = gold;
+		this.silver = silver;
+		this.bronze = bronze;
 		this.memberRole = memberRole;
 	}
 
