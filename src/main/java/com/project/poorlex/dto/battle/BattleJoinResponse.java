@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@RequiredArgsConstructor
 public class BattleJoinResponse {
     private Long battleId;
 }

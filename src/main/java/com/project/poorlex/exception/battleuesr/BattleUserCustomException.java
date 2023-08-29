@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class BattleUserCustomException extends RuntimeException{
+public class BattleUserCustomException extends RuntimeException {
 
     private final int statusCode;
     private final BattleUserErrorCode errorCode;

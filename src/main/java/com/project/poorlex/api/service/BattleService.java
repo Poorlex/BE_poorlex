@@ -131,31 +131,26 @@ public class BattleService {
 
         Member member = authService.findMemberFromToken();
 
-        Optional<Battle> battleOptional = battleRepository.findById(battleRoomId);
+        Battle battle = battleRepository.findById(battleRoomId)
+                .orElseThrow(() -> new BattleCustomException(BattleErrorCode.BATTLE_NOT_FOUND));
 
-        if (battleOptional.isPresent()) {
-
-            Battle battle = battleOptional.get();
-
-            if (battle.getBattleStatus() == BattleStatus.PROGRESS) {
-                throw new BattleCustomException(BattleErrorCode.BATTLE_IS_ALREADY_IN_PROGRESS);
-            } else if (battle.getBattleStatus() == BattleStatus.FINISHED) {
-                throw new BattleCustomException(BattleErrorCode.BATTLE_IS_ALREADY_FINISH);
-            }
-
-            BattleUser battleUser = BattleUser.builder()
-                    .member(member)
-                    .battle(battleOptional.get())
-                    .role(Role.USER)
-                    .build();
-
-            battleUserRepository.save(battleUser);
-
-            BattleJoinResponse response = new BattleJoinResponse();
-            response.setBattleId(battle.getId());
-            return response;
-        } else {
-            throw new BattleCustomException(BattleErrorCode.BATTLE_NOT_FOUND);
+        if (battle.getBattleStatus() == BattleStatus.PROGRESS) {
+            throw new BattleCustomException(BattleErrorCode.BATTLE_IS_ALREADY_IN_PROGRESS);
+        } else if (battle.getBattleStatus() == BattleStatus.FINISHED) {
+            throw new BattleCustomException(BattleErrorCode.BATTLE_IS_ALREADY_FINISH);
         }
+
+        BattleUser battleUser = BattleUser.builder()
+                .member(member)
+                .battle(battle)
+                .role(Role.USER)
+                .build();
+
+        battleUserRepository.save(battleUser);
+
+        BattleJoinResponse response = new BattleJoinResponse();
+        response.setBattleId(battle.getId());
+        return response;
     }
+
 }

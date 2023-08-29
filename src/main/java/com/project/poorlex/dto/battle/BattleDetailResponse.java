@@ -8,7 +8,6 @@ import java.util.List;
 
 @Setter
 @Getter
-@RequiredArgsConstructor
 @ToString
 public class BattleDetailResponse {
 
@@ -22,7 +21,6 @@ public class BattleDetailResponse {
 
     private int total;
 
-    //private List<Member> battleMembers;
     private List<BattleMemberResponse> battleMembers;
 
     @Builder

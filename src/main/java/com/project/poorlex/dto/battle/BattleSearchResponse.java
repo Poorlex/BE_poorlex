@@ -9,7 +9,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@RequiredArgsConstructor
 public class BattleSearchResponse {
 
     private final List<Battle> battleList;
