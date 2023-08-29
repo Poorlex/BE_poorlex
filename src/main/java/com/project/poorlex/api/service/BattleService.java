@@ -5,14 +5,22 @@ import com.project.poorlex.domain.battleuser.BattleUser;
 import com.project.poorlex.domain.battleuser.BattleUserRepository;
 import com.project.poorlex.domain.battleuser.Role;
 import com.project.poorlex.domain.member.Member;
-import com.project.poorlex.dto.battle.BattleCreateRequest;
-import com.project.poorlex.dto.battle.BattleCreateResponse;
-import com.project.poorlex.dto.battle.BattleSearchResponse;
+import com.project.poorlex.domain.member.MemberRepository;
+import com.project.poorlex.dto.battle.*;
+import com.project.poorlex.exception.battle.BattleCustomException;
+import com.project.poorlex.exception.battle.BattleErrorCode;
+import com.project.poorlex.exception.battleuesr.BattleUserCustomException;
+import com.project.poorlex.exception.battleuesr.BattleUserErrorCode;
+import com.project.poorlex.exception.member.MemberCustomException;
+import com.project.poorlex.exception.member.MemberErrorCode;
+import io.jsonwebtoken.lang.Collections;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +29,8 @@ public class BattleService {
     private final BattleRepository battleRepository;
 
     private final BattleUserRepository battleUserRepository;
+
+    private final MemberRepository memberRepository;
 
     private final AuthService authService;
 
@@ -62,16 +72,85 @@ public class BattleService {
 
         List<Battle> battleList;
 
-        if(filter == BattleFilter.ALL){
+        if (filter == BattleFilter.ALL) {
             // 모든 방 조회
             // TODO : Pageable
             battleList = battleRepository.findAll();
-        }
-        else{
+        } else {
             // 예산 범위에 따른 조회
             battleList = battleRepository.findByBudgetBetween(filter.getMinBudget(), filter.getMaxBudget());
         }
 
         return BattleSearchResponse.from(battleList);
     }
+
+    // 배틀 방 상세 조회
+    public BattleDetailResponse searchBattleDetail(Long battleRoomId) {
+
+        Battle battle = battleRepository.findById(battleRoomId)
+                .orElseThrow(() -> new BattleCustomException(BattleErrorCode.BATTLE_NOT_FOUND));
+
+        List<BattleUser> battleUsers = battleUserRepository.findByBattleId(battleRoomId);
+
+
+        BattleDetailResponse response = BattleDetailResponse.builder()
+                .id(battle.getId())
+                .name(battle.getName())
+                .budget(battle.getBudget())
+                .total(battle.getTotal())
+                .build();
+
+        List<Long> memberIds = battleUsers.stream()
+                .map(battleUser -> battleUser.getMember().getId())
+                .collect(Collectors.toList());
+
+        List<Member> members = memberRepository.findAllById(memberIds);
+
+        List<BattleMemberResponse> battleMembers = members.stream()
+                .map(member -> {
+                    BattleMemberResponse battleMemberResponse = new BattleMemberResponse();
+                    battleMemberResponse.setId(member.getId());
+                    battleMemberResponse.setName(member.getName());
+                    return battleMemberResponse;
+                }).collect(Collectors.toList());
+
+        // 진행 전인 방인 경우
+        if (battle.getBattleStatus() == BattleStatus.WAITING) {
+            response.setDescription(battle.getDescription());
+            response.setBattleMembers(battleMembers);
+        } else if (battle.getBattleStatus() == BattleStatus.PROGRESS) {
+            // TODO : 지출 작업 후 진행
+        }
+
+        return response;
+    }
+
+    // 배틀 참여하기
+    @Transactional
+    public BattleJoinResponse joinBattle(Long battleRoomId) {
+
+        Member member = authService.findMemberFromToken();
+
+        Battle battle = battleRepository.findById(battleRoomId)
+                .orElseThrow(() -> new BattleCustomException(BattleErrorCode.BATTLE_NOT_FOUND));
+
+        if (battle.getBattleStatus() == BattleStatus.PROGRESS) {
+            throw new BattleCustomException(BattleErrorCode.BATTLE_IS_ALREADY_IN_PROGRESS);
+        } else if (battle.getBattleStatus() == BattleStatus.FINISHED) {
+            throw new BattleCustomException(BattleErrorCode.BATTLE_IS_ALREADY_FINISH);
+        }
+
+        BattleUser battleUser = BattleUser.builder()
+                .member(member)
+                .battle(battle)
+                .role(Role.USER)
+                .build();
+
+        battleUserRepository.save(battleUser);
+
+        BattleJoinResponse response = new BattleJoinResponse();
+        response.setBattleId(battle.getId());
+        return response;
+    }
+
 }
