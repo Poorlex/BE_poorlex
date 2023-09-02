@@ -16,25 +16,25 @@ public class BattleController {
 
     @PostMapping
     public ApiResponse<BattleCreateResponse> createBattle(
-            @RequestBody BattleCreateRequest request) {
+        @RequestBody BattleCreateRequest request) {
         return ApiResponse.ok(battleService.createBattleAndBattleUser(request));
     }
 
     @GetMapping
     public ApiResponse<BattleSearchResponse> searchBattle(
-            @RequestParam BattleFilter filter) {
+        @RequestParam BattleFilter filter) {
         return ApiResponse.ok(battleService.searchBattle(filter));
     }
 
     @GetMapping("/join")
     public ApiResponse<BattleJoinResponse> joinBattle(
-            @RequestParam Long battleId) {
+        @RequestParam Long battleId) {
         return ApiResponse.ok(battleService.joinBattle(battleId));
     }
 
     @GetMapping("/detail")
     public ApiResponse<BattleDetailResponse> searchDetailBattle(
-            @RequestParam Long battleId) {
+        @RequestParam Long battleId) {
         return ApiResponse.ok(battleService.searchBattleDetail(battleId));
     }
 }
