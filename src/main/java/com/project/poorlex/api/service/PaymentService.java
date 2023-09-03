@@ -47,13 +47,15 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
 
-        images.forEach(file -> {
-            String key = "payments/" + file.getOriginalFilename(); // S3 내의 저장 경로
-            uploadToS3(file, "poorlex", key);
+        if(images != null && !images.isEmpty()){
+            images.forEach(file -> {
+                String key = "payments/" + file.getOriginalFilename(); // S3 내의 저장 경로
+                uploadToS3(file, "poorlex", key);
 
-            String imageUrl = generateS3Url("poorlex", key);
-            savePaymentImages(savedPayment, imageUrl);
-        });
+                String imageUrl = generateS3Url("poorlex", key);
+                savePaymentImages(savedPayment, imageUrl);
+            });
+        }
 
         PaymentCreateResponse response = new PaymentCreateResponse();
 

@@ -24,7 +24,7 @@ public class PaymentController {
     @PostMapping
     public ApiResponse<PaymentCreateResponse> createPayment(
             @RequestPart("request")PaymentCreateRequest request,
-            @RequestPart("images") List<MultipartFile> images){
+            @RequestPart(value = "images", required = false) List<MultipartFile> images){
         return ApiResponse.ok(paymentService.createPayment(request, images));
     }
 

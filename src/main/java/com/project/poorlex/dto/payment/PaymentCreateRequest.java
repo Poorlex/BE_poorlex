@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
+@Builder
 public class PaymentCreateRequest {
 
     private int amount;
