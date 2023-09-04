@@ -28,13 +28,13 @@ public class BattleController {
 
     @GetMapping("/join")
     public ApiResponse<BattleJoinResponse> joinBattle(
-            @RequestParam Long battleId){
+        @RequestParam Long battleId) {
         return ApiResponse.ok(battleService.joinBattle(battleId));
     }
 
     @GetMapping("/detail")
     public ApiResponse<BattleDetailResponse> searchDetailBattle(
-            @RequestParam Long battleId){
+        @RequestParam Long battleId) {
         return ApiResponse.ok(battleService.searchBattleDetail(battleId));
     }
 }

@@ -1,4 +1,4 @@
-package com.project.poorlex.domain.paymentphoto;
+package com.project.poorlex.domain.paymentimage;
 
 import com.project.poorlex.domain.BaseEntity;
 import com.project.poorlex.domain.payment.Payment;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PaymentPhoto extends BaseEntity {
+public class PaymentImage extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class PaymentPhoto extends BaseEntity {
 	private String url;
 
 	@Builder
-	private PaymentPhoto(Payment payment, String url) {
+	private PaymentImage(Payment payment, String url) {
 		this.payment = payment;
 		this.url = url;
 	}

@@ -4,6 +4,7 @@ import com.project.poorlex.domain.BaseEntity;
 import com.project.poorlex.domain.battleuser.BattleUser;
 import com.project.poorlex.domain.budget.Budget;
 
+import com.project.poorlex.domain.member.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,23 +26,16 @@ public class Payment extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	private BattleUser battleUser;
+	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Budget budget;
-
-	private String content;
-
-	private String category;
+	private String memo;
 
 	private int amount;
 
 	@Builder
-	private Payment(BattleUser battleUser, Budget budget, String content, String category, int amount) {
-		this.battleUser = battleUser;
-		this.budget = budget;
-		this.content = content;
-		this.category = category;
+	private Payment(Member member, String memo, int amount) {
+		this.member = member;
+		this.memo = memo;
 		this.amount = amount;
 	}
 }
