@@ -81,17 +81,17 @@ public class PaymentService {
 
         List<Payment> paymentList = paymentRepository.findPaymentsByMemberId(member.getId());
 
-        return PaymentSearchResponse.from(paymentList);
+        List<PaymentImage> paymentImages = paymentImageRepository.findAllByPaymentIn(paymentList);
+
+        return PaymentSearchResponse.from(paymentList, paymentImages);
     }
 
     public PaymentSearchResponse searchPaymentByPaymentId(Long paymentId) {
-
-        List<Payment> all = paymentRepository.findAll();
-
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new PaymentCustomException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 
-        return PaymentSearchResponse.from(payment);
+        List<PaymentImage> paymentImages = paymentImageRepository.findAllByPaymentId(payment.getId());
 
+        return PaymentSearchResponse.from(payment, paymentImages);
     }
 }

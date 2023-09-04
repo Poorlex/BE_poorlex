@@ -6,6 +6,7 @@ import com.project.poorlex.domain.member.MemberRepository;
 import com.project.poorlex.domain.payment.Payment;
 import com.project.poorlex.domain.payment.PaymentRepository;
 import com.project.poorlex.dto.payment.PaymentCreateRequest;
+import com.project.poorlex.dto.payment.PaymentDetail;
 import com.project.poorlex.dto.payment.PaymentSearchResponse;
 import com.project.poorlex.exception.payment.PaymentCustomException;
 import jakarta.transaction.Transactional;
@@ -88,7 +89,7 @@ public class PaymentServiceTest extends IntegrationTestSupport {
 
         // when
         PaymentSearchResponse paymentSearchResponse = paymentService.searchAllPaymentForUser();
-        List<Payment> paymentList = paymentSearchResponse.getPaymentList();
+        List<PaymentDetail> paymentList = paymentSearchResponse.getPaymentDetails();
 
         // then
         assertThat(paymentList).hasSize(10);
@@ -119,10 +120,10 @@ public class PaymentServiceTest extends IntegrationTestSupport {
         PaymentSearchResponse firstPaymentSearchResponse = paymentService.searchPaymentByPaymentId(paymentRepository.findTopByOrderByIdAsc().getId());
         PaymentSearchResponse lastPaymentSearchResponse = paymentService.searchPaymentByPaymentId(paymentRepository.findTopByOrderByIdDesc().getId());
 
-        assertThat(firstPaymentSearchResponse.getPayment().getAmount()).isEqualTo(2000);
-        assertThat(lastPaymentSearchResponse.getPayment().getAmount()).isEqualTo(2000 * 10);
-        assertThat(firstPaymentSearchResponse.getPayment().getMemo()).isEqualTo("지출등록1");
-        assertThat(lastPaymentSearchResponse.getPayment().getMemo()).isEqualTo("지출등록10");
+        assertThat(firstPaymentSearchResponse.getPaymentDetail().getPayment().getAmount()).isEqualTo(2000);
+        assertThat(lastPaymentSearchResponse.getPaymentDetail().getPayment().getAmount()).isEqualTo(2000 * 10);
+        assertThat(firstPaymentSearchResponse.getPaymentDetail().getPayment().getMemo()).isEqualTo("지출등록1");
+        assertThat(lastPaymentSearchResponse.getPaymentDetail().getPayment().getMemo()).isEqualTo("지출등록10");
     }
 
     @Test
