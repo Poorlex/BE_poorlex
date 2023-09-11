@@ -7,6 +7,7 @@ import com.project.poorlex.domain.paymentimage.PaymentImage;
 import com.project.poorlex.domain.paymentimage.PaymentImageRepository;
 import com.project.poorlex.dto.payment.PaymentCreateRequest;
 import com.project.poorlex.dto.payment.PaymentCreateResponse;
+import com.project.poorlex.dto.payment.PaymentSearchResponse;
 import com.project.poorlex.exception.payment.PaymentCustomException;
 import com.project.poorlex.exception.payment.PaymentErrorCode;
 import jakarta.transaction.Transactional;
@@ -19,12 +20,15 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final AuthService authService;
+
+    private final S3Service s3Service;
 
     private final PaymentRepository paymentRepository;
 
@@ -50,9 +54,9 @@ public class PaymentService {
         if(images != null && !images.isEmpty()){
             images.forEach(file -> {
                 String key = "payments/" + file.getOriginalFilename(); // S3 내의 저장 경로
-                uploadToS3(file, "poorlex", key);
+                s3Service.uploadToS3(file, "poorlex", key);
 
-                String imageUrl = generateS3Url("poorlex", key);
+                String imageUrl = s3Service.generateS3Url("poorlex", key);
                 savePaymentImages(savedPayment, imageUrl);
             });
         }
@@ -71,22 +75,23 @@ public class PaymentService {
         paymentImageRepository.save(paymentImage);
     }
 
-    private String generateS3Url(String bucketName, String key) {
-        return "https://" + bucketName + ".s3." + Region.AP_NORTHEAST_2.id() + ".amazonaws.com/" + key;
+    public PaymentSearchResponse searchAllPaymentForUser() {
+
+        Member member = authService.findMemberFromToken();
+
+        List<Payment> paymentList = paymentRepository.findPaymentsByMemberId(member.getId());
+
+        List<PaymentImage> paymentImages = paymentImageRepository.findAllByPaymentIn(paymentList);
+
+        return PaymentSearchResponse.from(paymentList, paymentImages);
     }
 
+    public PaymentSearchResponse searchPaymentByPaymentId(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new PaymentCustomException(PaymentErrorCode.PAYMENT_NOT_FOUND));
 
-    private void uploadToS3(MultipartFile file, String bucketName, String key) {
-        try {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .build();
+        List<PaymentImage> paymentImages = paymentImageRepository.findAllByPaymentId(payment.getId());
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-        } catch (Exception e) {
-            throw new PaymentCustomException(PaymentErrorCode.FAIL_UPLOAD_IMAGE);
-        }
+        return PaymentSearchResponse.from(payment, paymentImages);
     }
-
 }
