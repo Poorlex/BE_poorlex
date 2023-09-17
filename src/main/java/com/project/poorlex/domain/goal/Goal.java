@@ -43,8 +43,9 @@ public class Goal extends BaseEntity {
 	private boolean isCompleted;
 
 	@Builder
-	private Goal(Member member, String name, String photoUrl, int amount, int currentAmount,
+	private Goal(Long id, Member member, String name, String photoUrl, int amount, int currentAmount,
 		LocalDateTime startDate, LocalDateTime endDate, boolean isCompleted) {
+		this.id = id;
 		this.member = member;
 		this.name = name;
 		this.photoUrl = photoUrl;
