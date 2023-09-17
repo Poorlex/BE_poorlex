@@ -3,8 +3,9 @@ package com.project.poorlex.api.service;
 import com.project.poorlex.domain.goal.Goal;
 import com.project.poorlex.domain.goal.GoalRepository;
 import com.project.poorlex.domain.member.Member;
-import com.project.poorlex.domain.member.MemberRepository;
 import com.project.poorlex.dto.goal.*;
+import com.project.poorlex.exception.goal.GoalCustomException;
+import com.project.poorlex.exception.goal.GoalErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +17,10 @@ public class GoalService {
 
     private final GoalRepository goalRepository;
 
-    private final MemberRepository memberRepository;
-
     private final AuthService authService;
 
     public GoalCreateResponse createGoal(GoalCreateRequest request) {
 
-//        Optional<Member> optionalMember = memberRepository.findByOauthId(request.getOauthId());
-//        if (!optionalMember.isPresent()) {
-//            throw new RuntimeException("id not found.");
-//        }
-//
-//        Member member = optionalMember.get();
         Member member = authService.findMemberFromToken();
 
         Goal goal = Goal.builder()
@@ -62,13 +55,12 @@ public class GoalService {
 
     public GoalUpdateResponse updateGoal(GoalUpdateRequest request, Long id) {
 
-//        Member member = memberRepository.findByOauthId(oauthId).orElseThrow(() -> new RuntimeException("Id not found"));
-        Member  member = authService.findMemberFromToken();
-        Long goalId = goalRepository.findById(id).orElseThrow(() -> new RuntimeException("Goal not found"))
-                .getId();
+        Member member = authService.findMemberFromToken();
+        Goal existingGoalId = goalRepository.findById(id)
+                .orElseThrow(() -> new GoalCustomException(GoalErrorCode.GOAL_NOT_FOUND));
 
         Goal updatedGoal = Goal.builder()
-                .id(goalId)
+                .id(existingGoalId.getId())
                 .member(member)
                 .amount(request.getAmount())
                 .currentAmount(request.getCurrentAmount())
@@ -85,11 +77,10 @@ public class GoalService {
 
     public GoalUpdateResponse goalCompleted(Long id, GoalUpdateRequest request) {
 
-        Long goalId = goalRepository.findById(id)
-            .orElseThrow(() -> new GoalCustomException(GoalErrorCode.GOAL_NOT_FOUND))
-                .getId();
+        Goal existingGoalId = goalRepository.findById(id)
+                .orElseThrow(() -> new GoalCustomException(GoalErrorCode.GOAL_NOT_FOUND));
         Goal completedGoal = Goal.builder()
-                .id(goalId)
+                .id(existingGoalId.getId())
                 .amount(request.getAmount())
                 .currentAmount(request.getCurrentAmount())
                 .name(request.getName())
@@ -105,7 +96,10 @@ public class GoalService {
 
     public boolean deleteGoal(Long id) {
 
-        goalRepository.deleteById(id);
+        Goal existingGoalId = goalRepository.findById(id)
+                .orElseThrow(() -> new GoalCustomException(GoalErrorCode.GOAL_NOT_FOUND));
+
+        goalRepository.deleteById(existingGoalId.getId());
 
         return true;
     }
