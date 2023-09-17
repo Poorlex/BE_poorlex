@@ -85,7 +85,8 @@ public class GoalService {
 
     public GoalUpdateResponse goalCompleted(Long id, GoalUpdateRequest request) {
 
-        Long goalId = goalRepository.findById(id).orElseThrow(() -> new RuntimeException("Goal not found"))
+        Long goalId = goalRepository.findById(id)
+            .orElseThrow(() -> new GoalCustomException(GoalErrorCode.GOAL_NOT_FOUND))
                 .getId();
         Goal completedGoal = Goal.builder()
                 .id(goalId)
