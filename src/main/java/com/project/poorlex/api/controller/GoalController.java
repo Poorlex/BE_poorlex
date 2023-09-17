@@ -15,14 +15,14 @@ public class GoalController {
 
     private final GoalService goalService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<GoalCreateResponse> createGoal(
             @RequestBody GoalCreateRequest request) {
 
         return ApiResponse.ok(goalService.createGoal(request));
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public ApiResponse<List<GoalListResponse>> getAllGoals(@RequestParam String oauthId) {
 
         return ApiResponse.ok(goalService.getAllGoals(oauthId));
@@ -34,7 +34,7 @@ public class GoalController {
         return ApiResponse.ok(goalService.getAllCompletedGoals(oauthId));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ApiResponse<GoalUpdateResponse> updateGoal(
              @PathVariable Long id,
             @RequestBody GoalUpdateRequest request) {
@@ -48,7 +48,7 @@ public class GoalController {
         return ApiResponse.ok(goalService.goalCompleted(id, request));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ApiResponse<?> deleteGoal(@PathVariable Long id) {
 
         return ApiResponse.ok(goalService.deleteGoal(id));
