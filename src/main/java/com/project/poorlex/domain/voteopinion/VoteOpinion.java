@@ -1,6 +1,7 @@
 package com.project.poorlex.domain.voteopinion;
 
 import com.project.poorlex.domain.BaseEntity;
+import com.project.poorlex.domain.battleuser.BattleUser;
 import com.project.poorlex.domain.vote.Vote;
 
 import jakarta.persistence.Entity;
@@ -26,11 +27,16 @@ public class VoteOpinion extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Vote vote;
 
+	//투표 결과 집계를 위한 battleUser 추가
+	@ManyToOne(fetch = FetchType.LAZY)
+	private BattleUser battleUser;
+
 	private boolean isAgreed;
 
 	@Builder
-	private VoteOpinion(Vote vote, boolean isAgreed) {
+	private VoteOpinion(Vote vote, boolean isAgreed, BattleUser battleUser) {
 		this.vote = vote;
 		this.isAgreed = isAgreed;
+		this.battleUser = battleUser;
 	}
 }
