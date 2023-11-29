@@ -2,38 +2,45 @@ package com.project.poorlex.domain.vote;
 
 import com.project.poorlex.domain.BaseEntity;
 import com.project.poorlex.domain.battleuser.BattleUser;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Vote extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private BattleUser battleUser;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private BattleUser battleUser;
 
-	private String name;
+    private String name;
 
-	private int price;
+    private int price;
 
-	@Builder
-	private Vote(BattleUser battleUser, String name, int price) {
-		this.battleUser = battleUser;
-		this.name = name;
-		this.price = price;
-	}
+    //투표 종료 시간 추가
+    private LocalDateTime endDate;
+
+    private String result;
+
+    @Builder
+    private Vote(Long id,BattleUser battleUser, String name, int price, LocalDateTime endDate, String result) {
+        this.id = id;
+        this.battleUser = battleUser;
+        this.name = name;
+        this.price = price;
+        this.endDate = endDate;
+        this.result = result;
+
+    }
 }
