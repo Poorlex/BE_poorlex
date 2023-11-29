@@ -1,8 +1,8 @@
 package com.project.poorlex.dto.vote;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.poorlex.domain.vote.VoteTime;
+import com.project.poorlex.exception.vote.VoteCustomException;
 import com.project.poorlex.exception.vote.VoteErrorCode;
-import com.project.poorlex.exception.vote.VoteTimeCustomException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,27 +16,31 @@ import java.time.LocalDateTime;
 @Builder
 public class VoteCreateRequest {
 
-    private Long battleUserId;
+  private Long battleUserId;
 
-    private String name;
+  private String name;
 
-    private int price;
+  private int price;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime endDate;
+  private VoteTime voteTime;
 
-    private int time;
+  public LocalDateTime calculateEndDate() throws VoteCustomException {
 
-    public LocalDateTime calculateEndDate() throws VoteTimeCustomException {
+    switch (voteTime) {
 
-        if (time == 5) {
-            return LocalDateTime.now().plusMinutes(5);
-        } else if (time == 10) {
-            return LocalDateTime.now().plusMinutes(10);
-        } else if (time == 30) {
-            return LocalDateTime.now().plusMinutes(30);
-        } else if (time == 60) {
-            return LocalDateTime.now().plusHours(1);
-        } else throw new VoteTimeCustomException(VoteErrorCode.TIME_NOT_VALID);
+      case FIVE -> {
+        return LocalDateTime.now().plusMinutes(5);
+      }
+      case TEN -> {
+        return LocalDateTime.now().plusMinutes(10);
+      }
+      case THIRTY -> {
+        return LocalDateTime.now().plusMinutes(30);
+      }
+      case SIXTY -> {
+        return LocalDateTime.now().plusMinutes(60);
+      }
+      default -> throw new VoteCustomException(VoteErrorCode.TIME_NOT_VALID);
     }
+  }
 }
